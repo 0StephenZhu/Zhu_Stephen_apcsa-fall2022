@@ -1,7 +1,7 @@
 //(c) A+ Computer Science
 //www.apluscompsci.com
 
-//Name -
+//Name - 
 //Date -
 //Class -
 //Lab  -
@@ -9,7 +9,7 @@
 public class AsciiArt
 {
 	public static void main (String[] args) {
-		System.out.println("Your Name \n\n" );
+		System.out.println("Stephen \n\n" );
 		System.out.println("What type of ANIMAL YOU WILL DRAW" );
 		System.out.println("\n\n\n\n" );
 
@@ -17,6 +17,7 @@ public class AsciiArt
 		System.out.println("               /  \\               " );
 		System.out.println("              /    \\              " );
 		System.out.println("             [------]             " );
+		System.out.println("              This is art          ");
 		//add other output
 
 		System.out.println(" \n\n\n\nHelpFul Hints" );
