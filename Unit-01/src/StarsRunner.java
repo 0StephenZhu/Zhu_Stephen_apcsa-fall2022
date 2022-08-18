@@ -17,12 +17,32 @@ public class StarsRunner
 	   
 	   StarsAndStripes tempObject = new StarsAndStripes();
 	   tempObject.printTwoBlankLines();
+	   
+	   tempObject.printTwentyDashes();
+	   tempObject.printTwentyStars();
+	   tempObject.printTwentyDashes();
 	   tempObject.printTwentyStars();
 	   tempObject.printTwentyDashes();
 	   tempObject.printTwentyStars();
 	   tempObject.printTwentyDashes();
-	   tempObject.printASmallBox();
-	   tempObject.printABigBox();
+	   
+	   tempObject.printTwoBlankLines();
+	   
+	   tempObject.printTwentyDashes();
+	   tempObject.printTwentyStars();
+	   tempObject.printTwentyDashes();
+	   tempObject.printTwentyStars();
+	   tempObject.printTwentyDashes();
+	   tempObject.printTwentyStars();
+	   tempObject.printTwentyDashes();
+	   
+	   tempObject.printTwentyStars();
+	   tempObject.printTwentyDashes();
+	   tempObject.printTwentyStars();
+	   tempObject.printTwentyDashes();
+	   tempObject.printTwentyStars();
+	   tempObject.printTwentyDashes();
+	   
       
       //call the methods needed to make the patterns on the word document
       
