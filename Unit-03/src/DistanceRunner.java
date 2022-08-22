@@ -30,10 +30,21 @@ public class DistanceRunner
 		System.out.print("Enter Y2 :: ");
 		int y2 = keyboard.nextInt();
 		
-		Distance tempObject = new Distance(x1, y1, x2, y2);
-		tempObject.calcDistance();
+		Distance test = new Distance();
+		test.setCoordinates(x1, y1, x2, y2);
 		
-		System.out.println(tempObject);
+		System.out.println(test);
+		
+		int testCases[][] = {
+				{1, 1, 2, 1}, 
+				{1, 1, -2, 2}, 
+				{1, 1, 0, 0}, 
+		};
+		
+		for (int[] testCase : testCases) {
+			test.setCoordinates(testCase[0], testCase[1], testCase[2], testCase[3]);
+			System.out.println(test);
+		}	
 		
 
 		
