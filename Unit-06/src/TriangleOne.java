@@ -10,7 +10,7 @@ public class TriangleOne
 
 	public TriangleOne()
 	{
-		word="";
+		setWord("");
 	}
 
 	public TriangleOne(String s)
