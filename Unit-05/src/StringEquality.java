@@ -14,13 +14,12 @@ public class StringEquality
 
 	public StringEquality()
 	{
-		wordOne = wordTwo = "";
+		setWords("", "");
 	}
 
 	public StringEquality(String one, String two)
 	{
-		wordOne = one;
-		wordTwo = two;
+		setWords(one, two);
 	}
 
 	public void setWords(String one, String two)

@@ -15,13 +15,12 @@ public class WordsCompare
 
 	public WordsCompare()
 	{
-		wordOne = wordTwo = "";
+		setWords("", "");
 	}
 
 	public WordsCompare(String one, String two)
 	{
-		wordOne = one;
-		wordTwo = two;
+		setWords(one, two);
 	}
 
 	public void setWords(String one, String two)
