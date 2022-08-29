@@ -29,15 +29,9 @@ public class RockPaperScissors
 	
 	public void randomCompChoice() {
 		switch((int)(Math.random() * 3)) {
-			case 0:
-				compChoice = "R";
-				break;
-			case 1:
-				compChoice = "P";
-				break;
-			default:
-				compChoice = "S";
-				break;
+			case 0: compChoice = "R"; break;
+			case 1: compChoice = "P"; break;
+			case 2: compChoice = "S"; break;
 		}
 	}
 
