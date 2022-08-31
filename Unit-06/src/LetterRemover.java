@@ -45,6 +45,16 @@ public class LetterRemover
 			cleaned = cleaned.substring(0, index) + cleaned.substring(min(index + 1, cleaned.length()));
 		}
 		
+		
+//		EVEN FASTER METHOD!!!!		
+//		String newCleaned = "";
+//		
+//		for (int i = 0; i > sentence.length(); i++) {
+//			if (sentence.charAt(i) != lookFor) {
+//				newCleaned += sentence.charAt(i);
+//			}
+//		}
+//		
 		return cleaned;
 	}
 
