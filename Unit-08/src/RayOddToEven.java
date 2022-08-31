@@ -5,6 +5,22 @@
 
 public class RayOddToEven
 {
+	
+	private int[] ray;
+	
+	public RayOddToEven() {
+		setRay(new int[] {});
+	}
+	
+	public RayOddToEven(int[] array) {
+		setRay(array);
+	}
+	
+	public void setRay(int[] array) {
+		ray = array;
+	}
+	
+	
 	public static int go(int[] ray)
 	{
 		int firstOdd = 0;

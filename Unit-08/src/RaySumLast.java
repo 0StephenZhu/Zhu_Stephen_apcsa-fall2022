@@ -5,6 +5,20 @@
 
 public class RaySumLast
 {
+	private int[] ray;
+	
+	public RaySumLast() {
+		setRay(new int[] {});
+	}
+	
+	public RaySumLast(int[] array) {
+		setRay(array);
+	}
+	
+	public void setRay(int[] array) {
+		ray = array;
+	}
+	
 	public static int go(int[] ray)
 	{
 		int sum = 0;
