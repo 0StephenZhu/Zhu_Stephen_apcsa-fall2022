@@ -65,13 +65,14 @@ public class Shuffler {
 		
 		int index = 0;
 		
-		for (int i = 0; i < shuffled.length; i += 2) {
+		for (int i = 0; i < mid; i++) {
 			values[index] = shuffled[i];
-			index++;
+			index +=2;
 		}
-		for (int i = 1; i < shuffled.length; i += 2) {
+		index = 1;
+		for (int i = mid; i < shuffled.length; i++) {
 			values[index] = shuffled[i];
-			index++;
+			index += 2;
 		}
 	}
 
