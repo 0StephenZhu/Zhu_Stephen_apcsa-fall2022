@@ -61,21 +61,22 @@ public class ToyStore
   
   	public void sortToysByCount()
   	{
-  		for (int i = 0; i < toyList.size(); i++) {
-  			Toy maxToy = toyList.get(i);
-  			int originalIndex = i;
-  			for (int j = i; j < toyList.size(); j++) {
-  				if (maxToy.getCount() < toyList.get(j).getCount()) {
-  					maxToy = toyList.get(j);
-  					originalIndex = j;
-  				}
-  			}
-  			
-  			
-  			Toy temp = toyList.get(i);
-  			toyList.set(i, maxToy);
-  			toyList.set(originalIndex, temp);
-  		}
+  		Collections.sort(toyList);
+//  		for (int i = 0; i < toyList.size(); i++) {
+//  			Toy maxToy = toyList.get(i);
+//  			int originalIndex = i;
+//  			for (int j = i; j < toyList.size(); j++) {
+//  				if (maxToy.getCount() < toyList.get(j).getCount()) {
+//  					maxToy = toyList.get(j);
+//  					originalIndex = j;
+//  				}
+//  			}
+//  			
+//  			
+//  			Toy temp = toyList.get(i);
+//  			toyList.set(i, maxToy);
+//  			toyList.set(originalIndex, temp);
+//  		}
   	}  
   	  
 	public String toString()

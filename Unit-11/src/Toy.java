@@ -4,7 +4,7 @@
 
 import static java.lang.System.*;
 
-public class Toy
+public class Toy implements Comparable<Toy>
 {
 	private String name;
 	private int count;
@@ -42,6 +42,13 @@ public class Toy
 	public void setName( String nm )
 	{
 		name = nm;
+	}
+	
+	public int compareTo( Toy rhs) {
+		if (count == rhs.getCount()) {
+			return name.compareTo(rhs.getName());
+		}
+		return (count > rhs.getCount()) ? -1 : 1;
 	}
 
 	public String toString()
