@@ -27,16 +27,13 @@ public class ToyStore
 		String[] temp = toys.split(" ");
 		toyList = new ArrayList<Toy>();
 		for (int i = 0; i < temp.length; i++) {
-			boolean isNew = true;
-			for (int j = 0; j < toyList.size(); j++) {
-				if (toyList.get(j).getName().equals(temp[i])) {
-					//Increment count by setting count the value of count + 1
-					toyList.get(j).setCount(toyList.get(j).getCount() + 1);
-					isNew = false;
-				}
-			}
-			if (isNew)
+			Toy tempToy = getThatToy(temp[i]);
+			if (tempToy == null) {
 				toyList.add(new Toy(temp[i]));
+			}
+			else {
+				tempToy.setCount(tempToy.getCount() + 1);
+			}
 		}
 	}
   
