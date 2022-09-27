@@ -91,10 +91,12 @@ class Rational implements Comparable<Rational>
 	
 	public boolean equals( Object obj)
 	{
-		if (obj.getClass().getSimpleName() != "Rational") {
-			return false;
-		}
-		else if (compareTo((Rational)obj) == 0) {
+		
+		Rational temp = (Rational) obj;
+//		if (obj.getClass().getSimpleName() != "Rational") {
+//			return false;
+//		}
+		if (compareTo(temp) == 0) {
 			return true;
 		}
 		
