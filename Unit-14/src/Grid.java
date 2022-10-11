@@ -11,6 +11,14 @@ public class Grid
    //load vals into the rows x cols grid randomly
 	public Grid(int rows, int cols, String[] vals)
 	{
+		grid = new String[rows][cols];
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < cols; j++) {
+				int index = (int) Math.floor(Math.random() * vals.length);
+				String val = vals[index];
+				grid[i][j] = val;
+			}
+		}
 	}
 
 	//find out which of the vals occurs the most
