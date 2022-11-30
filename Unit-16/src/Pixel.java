@@ -351,6 +351,37 @@ public class Pixel
    double average = (getRed() + getGreen() + getBlue()) / 3.0;
    return average;
  }
+ 
+ //Added functions for steg encoding
+ public void encode(int count) {
+	  int red = getRed();
+	  int green = getGreen();
+	  int blue = getBlue();
+	  
+	  //Turning all rgb pixels to multiples of 4
+	  red -= red % 4;
+	  green -= green % 4;
+	  blue -= blue % 4;
+	  
+	  //Turn count to binary and encode in pixel
+	  //Exception: if count is 8, then red, green, and blue will be 2 mod 4
+	  if (count == 8) {
+		  red += 2;
+		  green += 2;
+		  blue += 2;
+	  }
+	  else {
+		  red += count / 4;
+		  count %= 4;
+		  green += count / 2;
+		  count %= 2;
+		  blue += count % 2;
+	  }
+	  
+	  setRed(red);
+	  setGreen(green);
+	  setBlue(blue);
+ }
   
   /**
    * Method to return a string with information about this pixel

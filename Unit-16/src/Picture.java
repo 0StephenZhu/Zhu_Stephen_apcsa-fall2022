@@ -438,15 +438,194 @@ public class Picture extends SimplePicture
   }
   
   
+//  public Pixel encodePixel(Pixel currPixel, int count) {
+//	  int red = currPixel.getRed();
+//	  int green = currPixel.getGreen();
+//	  int blue = currPixel.getBlue();
+//	  
+//	  //Turning all rgb pixels to even
+//	  red -= red % 2;
+//	  green -= green % 2;
+//	  blue -= blue % 2;
+//	  
+//	  //Turn count to binary and encode in pixel
+//	  red += count / 4;
+//	  count %= 4;
+//	  green += count / 2;
+//	  count %= 2;
+//	  blue += count % 2;
+//	  
+//	  currPixel.setRed(red);
+//	  currPixel.setGreen(green);
+//	  currPixel.setBlue(blue);
+//	  
+//	  return currPixel;
+//  }
+  
+  public ArrayList<ArrayList<Integer>> validNeighbors(int row, int col, int height, int width) {
+	  ArrayList<ArrayList<Integer>> valid = new ArrayList<ArrayList<Integer>>();
+	  int r, c;
+	  for (int i = -1; i <= 1; i++) {
+		  for (int j = -1; j <= 1; j++) {
+			  r = i + row;
+			  c = j + col;
+			  if (r < 0 || r >= height) continue;
+			  if (c < 0 || c >= width) continue;
+			  if (i == 0 && j == 0) continue;
+			  valid.add(new ArrayList<Integer>(List.of(r, c)));
+		  }
+	  }
+	  return valid;
+  }
+  
+  public int decodePixel(Pixel currPixel) {
+	  if (currPixel.getRed() % 4 == 2) return 8;
+	  int four = (currPixel.getRed() % 2) * 4;
+	  int two = (currPixel.getGreen() % 2) * 2;
+	  int one = (currPixel.getBlue() % 2);
+	  return (four + two + one);
+  }
+ 
+  
+  public void encode(Picture msgPic) {
+	  Pixel[][] msgPixels = msgPic.getPixels2D();
+	  Pixel[][] currPixels = this.getPixels2D();
+	  Pixel currPixel = null;
+	  Pixel msgPixel = null;
+	  
+	  for (int row = 0; row < this.getHeight(); row++) {
+		  for (int col = 0; col < this.getWidth(); col++) {
+			  int count = 0;
+			  //Loop through all 8 neighbors and increment count of neighbor black pixels
+			  
+			  ArrayList<ArrayList<Integer>> neigh = validNeighbors(row, col, this.getHeight(), this.getWidth());
+			  for (ArrayList<Integer> n : neigh) {
+				  msgPixel = msgPixels[n.get(0)][n.get(1)];
+				  if (msgPixel.colorDistance(Color.BLACK) < 50) { count++; }
+			  }
+
+			  //Encode count of neighbor black pixels into current pixel 
+			  currPixel = currPixels[row][col];
+			  currPixel.encode(count); 
+		  }
+	  }
+  }
+  
+  public Picture decode() {
+	  Pixel[][] pixels = this.getPixels2D();
+	  int row = this.getHeight();
+	  int col = this.getWidth();
+	  
+	  Picture messagePicture = new Picture(row,col);
+	  Pixel[][] messagePixels = messagePicture.getPixels2D();
+	  
+	  int[][] neighborCount = new int[row][col];
+	  boolean[][] isDetermined = new boolean[row][col];
+	  int[][] unknownNeighborCount = new int[row][col];
+	  
+	  //Filling isDetermined, unknownNeighborCount, and neighborCount array
+	  for (int r = 0; r < row; r++) {
+		  for (int c = 0; c < col; c++) {
+			  isDetermined[r][c] = false;
+			  
+			  //Cases for when unknownNeighborCount has pixels at edge or corner:
+			  if (r == 0 || r == row - 1 || c == 0 || c == col - 1) {
+				  if (r == 0 && c == 0) {
+					  unknownNeighborCount[r][c] = 3;
+				  }
+				  else if (r == 0 && c == col - 1) {
+					  unknownNeighborCount[r][c] = 3;
+				  }
+				  else if (r == row - 1 && c == 0) {
+					  unknownNeighborCount[r][c] = 3;
+				  }
+				  else if (r == row - 1 && c == col - 1) {
+					  unknownNeighborCount[r][c] = 3;
+				  }
+				  else {
+					  unknownNeighborCount[r][c] = 5;
+				  }
+			  }
+			  else {
+				  unknownNeighborCount[r][c] = 8;
+			  }
+			  
+			  //Decoding the encoded pic
+			  neighborCount[r][c] = decodePixel(pixels[r][c]);
+		  }
+	  }
+	  System.out.println(neighborCount[230][256]);
+	  
+	  
+	  
+	  int unknownLeft = row * col;
+	  //Loop until no pixel has any neighor black pixels
+	  do {
+		  for (int r = 0; r < row; r++) {
+			  for (int c = 0; c < col; c++) {
+				  
+				  //Case if all neighbors are white pixels but info is not known yet
+				  if (neighborCount[r][c] == 0 && unknownNeighborCount[r][c] > 0) {
+					  ArrayList<ArrayList<Integer>> neigh = validNeighbors(r, c, row, col);
+					  for (ArrayList<Integer> n : neigh) {
+						  int newR = n.get(0);
+						  int newC = n.get(1);
+						  if (isDetermined[newR][newC]) continue;
+						  isDetermined[newR][newC] = true;
+						  unknownLeft--;
+						  messagePixels[newR][newC].setColor(Color.WHITE);
+						  
+						  //Decrement unknownNeighborCount for each neighbor of the current pixel's neighbor
+						  ArrayList<ArrayList<Integer>> neigh2 = validNeighbors(newR, newC, row, col);
+						  for (ArrayList<Integer> n2 : neigh2) {
+							  unknownNeighborCount[n2.get(0)][n2.get(1)]--;
+						  }
+					  }
+				  }
+				  //Case if all unknown neighbors are black pixels
+				  else if (neighborCount[r][c] == unknownNeighborCount[r][c]) {
+					  ArrayList<ArrayList<Integer>> neigh = validNeighbors(r, c, row, col);
+					  for (ArrayList<Integer> n : neigh) {
+						  int newR = n.get(0);
+						  int newC = n.get(1);
+						  if (isDetermined[newR][newC]) continue;
+						  isDetermined[newR][newC] = true;
+						  unknownLeft--;
+						  messagePixels[newR][newC].setColor(Color.BLACK);
+						  
+						  //Decrement unknownNeighborCount and neighborCount
+						  ArrayList<ArrayList<Integer>> neigh2 = validNeighbors(newR, newC, row, col);
+						  for (ArrayList<Integer> n2 : neigh2) {
+							  unknownNeighborCount[n2.get(0)][n2.get(1)]--;
+							  neighborCount[n2.get(0)][n2.get(1)]--;
+						  }
+					  }
+				  }
+			  }
+		  }
+		  
+		  System.out.println(unknownLeft);
+		  
+	  } while (unknownLeft > 0);
+	  
+	  return messagePicture;
+  }
+  
   /* Main method for testing - each class in Java can have a main 
    * method 
    */
   public static void main(String[] args) 
   {
-    Picture beach = new Picture("C:/Users/zhus1953/Desktop/APCSA-StephenZ/Zhu_Stephen_apcsa-fall2022/Unit-16/src/images/water.jpg");
+    Picture beach = new Picture("C:/Users/zhus1953/Desktop/APCSA-StephenZ/Zhu_Stephen_apcsa-fall2022/Unit-16/src/images/beach.jpg");
+    //C:/Users/zhus1953/Desktop/APCSA-StephenZ/Zhu_Stephen_apcsa-fall2022/Unit-16/src/images/apple_icon.jpg
+    //C:/Users/zhus1953/Desktop/APCSA-StephenZ/Zhu_Stephen_apcsa-fall2022/Unit-16/src/images/msg.jpg
+    Picture encodePic = new Picture("C:/Users/zhus1953/Desktop/APCSA-StephenZ/Zhu_Stephen_apcsa-fall2022/Unit-16/src/images/msg.jpg");
     beach.explore();
-    beach.fixUnderwater();
+    encodePic.explore();
+    beach.encode(encodePic);
     beach.explore();
+    Picture decodePic = beach.decode();
+    decodePic.explore();
   }
   
 } // this } is the end of class Picture, put all new methods before this
