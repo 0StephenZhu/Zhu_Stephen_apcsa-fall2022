@@ -438,29 +438,6 @@ public class Picture extends SimplePicture
   }
   
   
-//  public Pixel encodePixel(Pixel currPixel, int count) {
-//	  int red = currPixel.getRed();
-//	  int green = currPixel.getGreen();
-//	  int blue = currPixel.getBlue();
-//	  
-//	  //Turning all rgb pixels to even
-//	  red -= red % 2;
-//	  green -= green % 2;
-//	  blue -= blue % 2;
-//	  
-//	  //Turn count to binary and encode in pixel
-//	  red += count / 4;
-//	  count %= 4;
-//	  green += count / 2;
-//	  count %= 2;
-//	  blue += count % 2;
-//	  
-//	  currPixel.setRed(red);
-//	  currPixel.setGreen(green);
-//	  currPixel.setBlue(blue);
-//	  
-//	  return currPixel;
-//  }
   
   public ArrayList<ArrayList<Integer>> validNeighbors(int row, int col, int height, int width) {
 	  ArrayList<ArrayList<Integer>> valid = new ArrayList<ArrayList<Integer>>();
@@ -496,17 +473,41 @@ public class Picture extends SimplePicture
 	  for (int row = 0; row < this.getHeight(); row++) {
 		  for (int col = 0; col < this.getWidth(); col++) {
 			  int count = 0;
-			  //Loop through all 8 neighbors and increment count of neighbor black pixels
-			  
 			  ArrayList<ArrayList<Integer>> neigh = validNeighbors(row, col, this.getHeight(), this.getWidth());
 			  for (ArrayList<Integer> n : neigh) {
 				  msgPixel = msgPixels[n.get(0)][n.get(1)];
-				  if (msgPixel.colorDistance(Color.BLACK) < 50) { count++; }
+				  if (msgPixel.colorDistance(Color.BLACK) < 100) { count++; }
 			  }
 
-			  //Encode count of neighbor black pixels into current pixel 
+			  //Encoding Algorithm:
 			  currPixel = currPixels[row][col];
-			  currPixel.encode(count); 
+			  int red = currPixel.getRed();
+			  int green = currPixel.getGreen();
+			  int blue = currPixel.getBlue();
+			  
+			  		//Turning all rgb pixels to even
+			  red -= red % 4;
+			  green -= green % 4;
+			  blue -= blue % 4;
+			  
+			  		//Turn count to binary and encode in pixel
+			  		//Exception: if count is 8, then red, green, and blue will be 2 mod 4
+			  if (count == 8) {
+				  red += 2;
+				  green += 2;
+				  blue += 2;
+			  }
+			  else {
+				  red += count / 4;
+				  count %= 4;
+				  green += count / 2;
+				  count %= 2;
+				  blue += count % 2;
+			  }
+			  
+			  currPixel.setRed(red);
+			  currPixel.setGreen(green);
+			  currPixel.setBlue(blue);
 		  }
 	  }
   }
@@ -554,7 +555,6 @@ public class Picture extends SimplePicture
 			  neighborCount[r][c] = decodePixel(pixels[r][c]);
 		  }
 	  }
-	  System.out.println(neighborCount[230][256]);
 	  
 	  
 	  
@@ -563,8 +563,10 @@ public class Picture extends SimplePicture
 	  do {
 		  for (int r = 0; r < row; r++) {
 			  for (int c = 0; c < col; c++) {
+				  //Skip if current pixel has all neighbors determined
+				  if (unknownNeighborCount[r][c] == 0) continue;
 				  
-				  //Case if all neighbors are white pixels but info is not known yet
+				  //Case if all unknown neighbors are white pixels
 				  if (neighborCount[r][c] == 0 && unknownNeighborCount[r][c] > 0) {
 					  ArrayList<ArrayList<Integer>> neigh = validNeighbors(r, c, row, col);
 					  for (ArrayList<Integer> n : neigh) {
@@ -578,7 +580,9 @@ public class Picture extends SimplePicture
 						  //Decrement unknownNeighborCount for each neighbor of the current pixel's neighbor
 						  ArrayList<ArrayList<Integer>> neigh2 = validNeighbors(newR, newC, row, col);
 						  for (ArrayList<Integer> n2 : neigh2) {
-							  unknownNeighborCount[n2.get(0)][n2.get(1)]--;
+							  newR = n2.get(0);
+							  newC = n2.get(1);
+							  unknownNeighborCount[newR][newC]--;
 						  }
 					  }
 				  }
@@ -596,15 +600,17 @@ public class Picture extends SimplePicture
 						  //Decrement unknownNeighborCount and neighborCount
 						  ArrayList<ArrayList<Integer>> neigh2 = validNeighbors(newR, newC, row, col);
 						  for (ArrayList<Integer> n2 : neigh2) {
-							  unknownNeighborCount[n2.get(0)][n2.get(1)]--;
-							  neighborCount[n2.get(0)][n2.get(1)]--;
+							  newR = n2.get(0);
+							  newC = n2.get(1);
+							  unknownNeighborCount[newR][newC]--;
+							  neighborCount[newR][newC]--;
 						  }
 					  }
 				  }
 			  }
 		  }
 		  
-		  System.out.println(unknownLeft);
+		  //System.out.println(unknownLeft);
 		  
 	  } while (unknownLeft > 0);
 	  
@@ -616,15 +622,15 @@ public class Picture extends SimplePicture
    */
   public static void main(String[] args) 
   {
-    Picture beach = new Picture("C:/Users/zhus1953/Desktop/APCSA-StephenZ/Zhu_Stephen_apcsa-fall2022/Unit-16/src/images/beach.jpg");
+    Picture img = new Picture("C:/Users/zhus1953/Desktop/APCSA-StephenZ/Zhu_Stephen_apcsa-fall2022/Unit-16/src/images/beach.jpg");
     //C:/Users/zhus1953/Desktop/APCSA-StephenZ/Zhu_Stephen_apcsa-fall2022/Unit-16/src/images/apple_icon.jpg
     //C:/Users/zhus1953/Desktop/APCSA-StephenZ/Zhu_Stephen_apcsa-fall2022/Unit-16/src/images/msg.jpg
     Picture encodePic = new Picture("C:/Users/zhus1953/Desktop/APCSA-StephenZ/Zhu_Stephen_apcsa-fall2022/Unit-16/src/images/msg.jpg");
-    beach.explore();
+    img.explore();
     encodePic.explore();
-    beach.encode(encodePic);
-    beach.explore();
-    Picture decodePic = beach.decode();
+    img.encode(encodePic);
+    img.explore();
+    Picture decodePic = img.decode();
     decodePic.explore();
   }
   
