@@ -439,21 +439,7 @@ public class Picture extends SimplePicture
   
   
   
-  public ArrayList<ArrayList<Integer>> validNeighbors(int row, int col, int height, int width) {
-	  ArrayList<ArrayList<Integer>> valid = new ArrayList<ArrayList<Integer>>();
-	  int r, c;
-	  for (int i = -1; i <= 1; i++) {
-		  for (int j = -1; j <= 1; j++) {
-			  r = i + row;
-			  c = j + col;
-			  if (r < 0 || r >= height) continue;
-			  if (c < 0 || c >= width) continue;
-			  if (i == 0 && j == 0) continue;
-			  valid.add(new ArrayList<Integer>(List.of(r, c)));
-		  }
-	  }
-	  return valid;
-  }
+
   
   public int decodePixel(Pixel currPixel) {
 	  if (currPixel.getRed() % 4 == 2) return 8;
@@ -617,21 +603,116 @@ public class Picture extends SimplePicture
 	  return messagePicture;
   }
   
+  public ArrayList<ArrayList<Integer>> validNeighbors(int row, int col, int height, int width) {
+	  ArrayList<ArrayList<Integer>> valid = new ArrayList<ArrayList<Integer>>();
+	  int r, c;
+	  for (int i = -1; i <= 1; i++) {
+		  for (int j = -1; j <= 1; j++) {
+			  r = i + row;
+			  c = j + col;
+			  if (r < 0 || r >= height) continue;
+			  if (c < 0 || c >= width) continue;
+			  if (i == 0 && j == 0) continue;
+			  valid.add(new ArrayList<Integer>(List.of(r, c)));
+		  }
+	  }
+	  return valid;
+  }
+  
+  public Picture convolution() {
+	  this.grayscale();
+	  Pixel[][] pixels = this.getPixels2D();
+      int rows = this.getHeight();
+      int cols = this.getWidth();
+      
+      Picture convolutedPicture = new Picture(rows, cols);
+      Pixel[][] convolutedPixels = convolutedPicture.getPixels2D();
+      
+      int[][] filter = {
+    		  {-1, -2, -1},
+    		  {0, 0, 0},
+    		  {1, 2, 1}
+      };
+//      int[][] filter = {
+//    		  {-1, 0, 1},
+//    		  {-2, 0, 2},
+//    		  {-1, 0, 1}
+//      };
+      
+      for (int row = 0; row < rows; row++) {
+    	  for (int col = 0; col < cols; col++) {
+    		  int currVal = 0;
+    		  
+    		  //Loop neighbors
+    		  for (int i = -1; i <= 1; i++) {
+    			  for (int j = -1; j <= 1; j++) {
+    				  int r = i + row;
+    				  int c = j + col;
+    				  if (r < 0 || r >= rows) continue;
+    				  if (c < 0 || c >= cols) continue;
+    				  currVal += filter[i + 1][j + 1] * (int)pixels[r][c].getAverage();
+    			  }
+    		  }
+    		  
+    		  if (currVal < 0) currVal = 0;
+    		  if (currVal > 255) currVal = 255;
+    		  convolutedPixels[row][col].setColor(new Color(currVal, currVal, currVal));
+    	  }
+      }
+      
+	  return convolutedPicture;
+  }
+  
+  public Picture maxPool() {
+	  Pixel[][] pixels = this.getPixels2D();
+      int rows = this.getHeight();
+      int cols = this.getWidth();
+      
+      Picture poolPic = new Picture((rows + 1) / 2, (cols + 1) / 2); 
+      Pixel[][] poolPicPixels = poolPic.getPixels2D();
+      
+      for (int row = 0; row < rows; row += 2) {
+    	  for (int col = 0; col < cols; col += 2) {
+    		  int currMax = (int)pixels[row][col].getAverage();
+    		  if (row + 1 < rows) {
+    			  currMax = Math.max(currMax, (int)pixels[row + 1][col].getAverage());
+    		  }
+    		  if (col + 1 < cols) {
+    			  currMax = Math.max(currMax, (int)pixels[row][col + 1].getAverage());
+    		  }
+    		  if (row + 1 < rows && col + 1 < cols) {
+    			  currMax = Math.max(currMax, (int)pixels[row + 1][col + 1].getAverage());
+    		  }
+    		  
+    		  poolPicPixels[row / 2][col / 2].setColor(new Color(currMax, currMax, currMax));
+    	  }
+      }
+      
+      return poolPic;
+  }
+  
   /* Main method for testing - each class in Java can have a main 
    * method 
    */
   public static void main(String[] args) 
   {
-    Picture img = new Picture("C:/Users/zhus1953/Desktop/APCSA-StephenZ/Zhu_Stephen_apcsa-fall2022/Unit-16/src/images/beach.jpg");
-    //C:/Users/zhus1953/Desktop/APCSA-StephenZ/Zhu_Stephen_apcsa-fall2022/Unit-16/src/images/apple_icon.jpg
-    //C:/Users/zhus1953/Desktop/APCSA-StephenZ/Zhu_Stephen_apcsa-fall2022/Unit-16/src/images/msg.jpg
-    Picture encodePic = new Picture("C:/Users/zhus1953/Desktop/APCSA-StephenZ/Zhu_Stephen_apcsa-fall2022/Unit-16/src/images/msg.jpg");
-    img.explore();
-    encodePic.explore();
-    img.encode(encodePic);
-    img.explore();
-    Picture decodePic = img.decode();
-    decodePic.explore();
+//    Picture img = new Picture("C:/Users/zhus1953/Desktop/APCSA-StephenZ/Zhu_Stephen_apcsa-fall2022/Unit-16/src/images/beach.jpg");
+//    //C:/Users/zhus1953/Desktop/APCSA-StephenZ/Zhu_Stephen_apcsa-fall2022/Unit-16/src/images/apple_icon.jpg
+//    //C:/Users/zhus1953/Desktop/APCSA-StephenZ/Zhu_Stephen_apcsa-fall2022/Unit-16/src/images/msg.jpg
+//    Picture encodePic = new Picture("C:/Users/zhus1953/Desktop/APCSA-StephenZ/Zhu_Stephen_apcsa-fall2022/Unit-16/src/images/msg.jpg");
+//    img.explore();
+//    encodePic.explore();
+//    img.encode(encodePic);
+//    img.explore();
+//    Picture decodePic = img.decode();
+//    decodePic.explore();
+	  
+	  Picture img = new Picture("C:/Users/zhus1953/Desktop/APCSA-StephenZ/Zhu_Stephen_apcsa-fall2022/Unit-16/src/images/scipy-misc-ascent-2.jpg");
+	  img.explore();
+	  Picture convul = img.convolution();
+	  convul.explore();
+	  Picture pool = convul.maxPool();
+	  pool.explore();
   }
   
 } // this } is the end of class Picture, put all new methods before this

@@ -26,6 +26,8 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable
 
 	private boolean[] keys;
 	private BufferedImage back;
+	
+	private int shotCooldown;
 
 	public OuterSpace()
 	{
@@ -49,6 +51,8 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable
 //		horde.add(alienOne);
 //		horde.add(alienTwo);
 		shots = new Bullets();
+		
+		shotCooldown = 0;
 		
 
 		this.addKeyListener(this);
@@ -101,9 +105,11 @@ public class OuterSpace extends Canvas implements KeyListener, Runnable
 
 
 		//add in collision detection to see if Bullets hit the Aliens and if Bullets hit the Ship
-		if (keys[4] == true) {
+		shotCooldown++;
+		if (keys[4] == true && shotCooldown >= 10) {
 			shots.add(new Ammo(ship.getX() + ship.getWidth() / 2, ship.getY() - 10, 1));
 			keys[4] = false;
+			shotCooldown = 0;
 		}
 		
 		horde.moveEmAll();
